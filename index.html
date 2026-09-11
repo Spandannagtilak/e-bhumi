@@ -91,44 +91,44 @@
       <span class="text-[11px] uppercase tracking-wider text-on-surface-variant font-semibold font-code-num">LANDOWNER & CITIZEN SERVICES</span>
     </div>
 
-    <!-- Navigation Links -->
+    <!-- Navigation Links with Unique data-nav-view (Zero Color Bleeding) -->
     <nav class="flex-1 px-3 py-3 space-y-1 overflow-y-auto">
       <a href="#overview" data-nav-view="overview" class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-primary text-on-primary font-semibold transition-colors">
         <span class="material-symbols-outlined text-[20px]">dashboard</span>
         <span class="text-sm">Overview</span>
       </a>
-      <a href="#projects" data-nav-view="overview" class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors">
+      <a href="#projects" data-nav-view="projects" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors">
         <span class="material-symbols-outlined text-[20px]">account_tree</span>
         <span class="text-sm">Projects</span>
       </a>
-      <a href="#parcels" data-nav-view="parcels" class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors">
+      <a href="#parcels" data-nav-view="parcels" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors">
         <span class="material-symbols-outlined text-[20px]">grid_view</span>
         <span class="text-sm">Land Plots & Records</span>
         <span class="ml-auto text-[11px] font-code-num bg-surface-container px-1.5 py-0.5 rounded">528</span>
       </a>
-      <a href="#gis" data-nav-view="gis" class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors">
+      <a href="#gis" data-nav-view="gis" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors">
         <span class="material-symbols-outlined text-[20px]">map</span>
         <span class="text-sm">Interactive Map View</span>
         <span class="ml-auto text-[10px] font-code-num font-bold text-on-secondary-container bg-secondary-container px-1.5 py-0.5 rounded">LIVE</span>
       </a>
-      <a href="#workflows" data-nav-view="workflows" class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors">
+      <a href="#workflows" data-nav-view="workflows" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors">
         <span class="material-symbols-outlined text-[20px]">verified</span>
         <span class="text-sm">Workflows & Approvals</span>
         <span class="ml-auto text-[11px] font-code-num bg-error text-on-error font-bold px-1.5 py-0.5 rounded-full badge-pending-approvals">6</span>
       </a>
-      <a href="#survey" data-nav-view="survey" class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors">
+      <a href="#survey" data-nav-view="survey" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors">
         <span class="material-symbols-outlined text-[20px]">assignment</span>
         <span class="text-sm">Field Survey & Verification</span>
       </a>
-      <a href="#documents" data-nav-view="parcels" class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors">
+      <a href="#documents" data-nav-view="documents" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors">
         <span class="material-symbols-outlined text-[20px]">folder_shared</span>
         <span class="text-sm">Land Documents & Records</span>
       </a>
-      <a href="#reports" data-nav-view="overview" class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors">
+      <a href="#reports" data-nav-view="reports" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors">
         <span class="material-symbols-outlined text-[20px]">bar_chart</span>
         <span class="text-sm">Progress Reports</span>
       </a>
-      <a href="#complaints" data-nav-view="workflows" class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors">
+      <a href="#complaints" data-nav-view="complaints" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors">
         <span class="material-symbols-outlined text-[20px]">support_agent</span>
         <span class="text-sm">Public Complaints & Inquiries</span>
       </a>
@@ -153,7 +153,7 @@
   <header class="fixed top-0 left-72 right-0 h-16 bg-surface/95 backdrop-blur-xl border-b border-surface-container/80 z-40 flex items-center justify-between px-6">
     <!-- Left: Project Selector & Search -->
     <div class="flex items-center gap-3 flex-1 max-w-2xl">
-      <div class="flex items-center gap-2 bg-surface-container-low px-3 py-1.5 rounded-lg border border-surface-container min-w-0 max-w-xs cursor-pointer hover:bg-surface-container transition-colors">
+      <div onclick="switchView('projects')" class="flex items-center gap-2 bg-surface-container-low px-3 py-1.5 rounded-lg border border-surface-container min-w-0 max-w-xs cursor-pointer hover:bg-surface-container transition-colors" title="Switch Highway Corridor Project">
         <span class="text-xs font-semibold text-on-surface truncate">NH-44 Express Corridor Expansion - Packag...</span>
         <span class="material-symbols-outlined text-[16px] text-on-surface-variant">expand_more</span>
       </div>
@@ -216,7 +216,7 @@
     <!-- ==================== VIEW 1: OVERVIEW DASHBOARD ==================== -->
     <div id="view-overview" class="flex flex-col gap-6">
       
-      <!-- Executive Banner -->
+      <!-- Executive Banner Matching Screenshot -->
       <section class="bg-surface-container-lowest p-6 rounded-xl shadow-sm border border-surface-container/80 flex flex-col xl:flex-row items-start xl:items-center justify-between gap-6">
         <div class="flex flex-col gap-1 min-w-0">
           <div class="flex items-center gap-2 flex-wrap text-xs">
@@ -434,7 +434,7 @@
         </div>
       </section>
 
-      <!-- Interactive Map & Statutory Approvals Split Pane -->
+      <!-- Overview Split Pane: Left Google Satellite Map & Right Approvals Queue -->
       <section class="grid grid-cols-1 lg:grid-cols-12 gap-6">
         
         <!-- Left Pane: Interactive Map View with Google Satellite View (7 cols) -->
@@ -471,6 +471,9 @@
               <button id="btn-map-zoom-out" class="p-1.5 rounded bg-surface-container-lowest hover:bg-surface-container-high transition-colors" title="Zoom Out">
                 <span class="material-symbols-outlined text-[18px]">remove</span>
               </button>
+              <button onclick="switchView('gis')" class="p-1.5 rounded bg-surface-container-lowest hover:bg-surface-container-high text-on-surface transition-colors" title="Open Full-Screen Map View">
+                <span class="material-symbols-outlined text-[18px]">fullscreen</span>
+              </button>
             </div>
           </div>
 
@@ -478,7 +481,7 @@
           <div class="relative flex-1 w-full bg-[#1c2430] overflow-hidden min-h-[480px]">
             <div id="googleMapContainer" class="w-full h-full min-h-[480px]"></div>
 
-            <!-- Fallback Vector Canvas (If Google Maps is offline or key restricted) -->
+            <!-- Fallback Vector Canvas (If Google Maps is offline) -->
             <div id="gisMapSvgContainer" class="hidden absolute inset-0 bg-[#e3ecf8] flex items-center justify-center">
               <svg id="gisMapSvg" class="w-full h-full object-cover transition-transform duration-200" preserveAspectRatio="none" viewBox="0 0 800 500">
                 <polygon fill="#cbd5e1" fill-opacity="0.4" points="0,210 800,160 800,280 0,330"></polygon>
@@ -561,7 +564,7 @@
                 <span class="hidden sm:inline">Active Layer: High-Res Google Satellite</span>
               </div>
               <div class="flex items-center gap-1.5 text-secondary-container">
-                <span id="mapSatelliteStatus" class="w-1.5 h-1.5 rounded-full bg-secondary-container animate-pulse"></span>
+                <span class="map-satellite-status w-1.5 h-1.5 rounded-full bg-secondary-container animate-pulse"></span>
                 <span>Government Bhoomi Spatial Sync Active</span>
               </div>
             </div>
@@ -742,7 +745,145 @@
       </section>
     </div>
 
-    <!-- ==================== VIEW 2: LAND PLOTS & RECORDS EXPANDED ==================== -->
+    <!-- ==================== VIEW 2: DEDICATED PROJECTS MANAGEMENT VIEW ==================== -->
+    <div id="view-projects" class="hidden flex flex-col gap-6">
+      <div class="bg-surface-container-lowest p-6 rounded-xl shadow-sm border border-surface-container/80">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+          <div>
+            <h1 class="font-headline font-bold text-2xl text-on-surface">Highway & Infrastructure Acquisition Projects</h1>
+            <p class="text-xs text-on-surface-variant mt-0.5">National highway corridor land acquisition packages under Section 3A / 3D statutory notifications</p>
+          </div>
+          <div class="flex items-center gap-2 flex-wrap text-xs">
+            <button id="btnNewProjectTab" class="bg-primary hover:bg-primary-container text-on-primary px-4 py-2.5 rounded-lg font-semibold flex items-center gap-2 transition-colors shadow-sm">
+              <span class="material-symbols-outlined text-[18px]">add_circle</span>
+              <span>New Project</span>
+            </button>
+            <button id="btnBulkUpload" class="bg-surface-container-high hover:bg-surface-container-highest text-on-surface px-4 py-2.5 rounded-lg font-semibold flex items-center gap-2 transition-colors">
+              <span class="material-symbols-outlined text-[18px]">upload_file</span>
+              <span>Upload Project File (.geojson, .kml, .csv)</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Project File Upload Dropzone Banner -->
+        <div id="projectUploadDropzone" class="border-2 border-dashed border-outline-variant hover:border-primary p-6 rounded-xl text-center bg-surface-container-low/50 flex flex-col items-center justify-center gap-2 cursor-pointer transition-colors mb-6">
+          <input type="file" id="projectFileInput" accept=".geojson,.kml,.shp,.csv,.json" class="hidden">
+          <div class="w-12 h-12 rounded-full bg-surface-container-high text-secondary flex items-center justify-center">
+            <span class="material-symbols-outlined text-[28px]">folder_zip</span>
+          </div>
+          <div>
+            <div class="font-bold text-sm text-on-surface">Upload or Drop Project Boundary Files</div>
+            <div class="text-xs text-on-surface-variant mt-0.5">Import Cadastral GeoJSON, KML route alignment, or NIC-Bhoomi CSV package to register a new project</div>
+          </div>
+          <button type="button" onclick="document.getElementById('projectFileInput').click()" class="mt-2 bg-surface-container-highest hover:bg-surface-container text-on-surface px-3.5 py-1.5 rounded-lg text-xs font-semibold">
+            Browse Computer Files
+          </button>
+        </div>
+
+        <!-- Active Projects List -->
+        <div>
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="font-headline font-bold text-base text-on-surface">Active Corridor Projects (<span id="activeProjectsCount">3</span>)</h2>
+            <span class="text-xs text-on-surface-variant font-code-num">Live Synchronization with MoRTH & NIC-Bhoomi</span>
+          </div>
+          <div id="projectsListContainer" class="grid grid-cols-1 gap-4">
+            <!-- Dynamically populated by app.js -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== VIEW 3: DEDICATED INTERACTIVE MAP VIEW (GOOGLE MAPS) ==================== -->
+    <div id="view-gis" class="hidden flex flex-col gap-6">
+      <div class="bg-surface-container-lowest p-6 rounded-xl shadow-sm border border-surface-container/80">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
+          <div>
+            <h1 class="font-headline font-bold text-2xl text-on-surface">Interactive Map View (Google Satellite Cadastre)</h1>
+            <p class="text-xs text-on-surface-variant mt-0.5">High-resolution Google Maps Satellite imagery overlaid with official cadastral boundaries & Khasra geometry</p>
+          </div>
+          <!-- Dedicated Map Controls -->
+          <div class="flex items-center gap-2 flex-wrap text-xs">
+            <button id="btnDedicatedSatellite" class="bg-primary text-on-primary px-3.5 py-1.5 rounded-lg font-semibold flex items-center gap-1.5 shadow-sm transition-colors">
+              <span class="material-symbols-outlined text-[16px]">satellite_alt</span>
+              <span>Satellite View</span>
+            </button>
+            <button id="btnDedicatedHybrid" class="bg-surface-container-lowest text-on-surface-variant px-3.5 py-1.5 rounded-lg font-semibold flex items-center gap-1.5 border border-surface-container transition-colors">
+              <span class="material-symbols-outlined text-[16px]">layers</span>
+              <span>Hybrid (Roads + Labels)</span>
+            </button>
+            <button id="btnDedicatedTerrain" class="bg-surface-container-lowest text-on-surface-variant px-3.5 py-1.5 rounded-lg font-semibold flex items-center gap-1.5 border border-surface-container transition-colors">
+              <span class="material-symbols-outlined text-[16px]">map</span>
+              <span>Street Cadastre</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Full-Height Google Satellite Map Canvas -->
+        <div class="relative w-full rounded-xl overflow-hidden shadow-sm border border-surface-container bg-[#1c2430]">
+          <!-- Map Toolbar HUD -->
+          <div class="absolute top-3 left-3 z-10 flex items-center gap-2 bg-surface-container-lowest/90 backdrop-blur-md px-3 py-1.5 rounded-lg shadow-md border border-surface-container text-xs">
+            <span class="material-symbols-outlined text-[16px] text-secondary">explore</span>
+            <span class="font-code-num font-semibold text-on-surface">20.8980° N, 79.0265° E</span>
+            <span class="text-outline-variant">•</span>
+            <span class="text-on-surface-variant">Nagpur Rural — Highway Corridor 4B</span>
+          </div>
+
+          <!-- Floating Map Zoom/Center Controls -->
+          <div class="absolute top-3 right-3 z-10 flex flex-col gap-1.5 shadow-md">
+            <button id="btn-dedicated-center" class="w-8 h-8 rounded bg-surface-container-lowest text-on-surface hover:bg-surface-container-high flex items-center justify-center transition-colors shadow-sm" title="Center Alignment">
+              <span class="material-symbols-outlined text-[18px]">my_location</span>
+            </button>
+            <button id="btn-dedicated-zoom-in" class="w-8 h-8 rounded bg-surface-container-lowest text-on-surface hover:bg-surface-container-high flex items-center justify-center transition-colors shadow-sm" title="Zoom In">
+              <span class="material-symbols-outlined text-[18px]">add</span>
+            </button>
+            <button id="btn-dedicated-zoom-out" class="w-8 h-8 rounded bg-surface-container-lowest text-on-surface hover:bg-surface-container-high flex items-center justify-center transition-colors shadow-sm" title="Zoom Out">
+              <span class="material-symbols-outlined text-[18px]">remove</span>
+            </button>
+          </div>
+
+          <!-- The Real Google Map Canvas -->
+          <div id="dedicatedGoogleMap" class="w-full h-[620px] min-h-[500px]"></div>
+
+          <!-- Floating Active Parcel Inspector Card on Dedicated Map -->
+          <div class="absolute bottom-10 left-4 right-4 sm:right-auto sm:max-w-md bg-surface-container-lowest/95 backdrop-blur-md p-4 rounded-xl shadow-lg border border-surface-container z-20">
+            <div class="flex items-start justify-between gap-3 mb-2">
+              <div>
+                <div class="flex items-center gap-1.5">
+                  <span id="dedicated-parcel-id" class="font-code-num font-bold text-sm text-on-surface">#MH-NGP-4029</span>
+                  <span id="dedicated-survey-no" class="text-[11px] bg-surface-container-high text-on-surface px-1.5 py-0.5 rounded font-semibold">Survey 142/3A</span>
+                </div>
+                <div id="dedicated-owner" class="text-xs font-semibold text-on-surface mt-1">Rameshwar Patil & 2 Others</div>
+              </div>
+              <span id="dedicated-area" class="text-xs bg-surface-container text-on-surface-variant font-code-num px-2 py-0.5 rounded font-bold">2.85 Ha</span>
+            </div>
+
+            <div class="flex items-center justify-between p-2 my-2 bg-surface-container-low rounded-lg text-xs font-code-num">
+              <span>Fair Compensation Value:</span>
+              <span id="dedicated-valuation" class="font-bold text-secondary text-sm">₹ 1,42,50,000</span>
+            </div>
+
+            <button onclick="selectParcel(AppState.activeParcelId)" class="w-full bg-primary hover:bg-primary-container text-on-primary font-semibold py-2 px-3 rounded-lg text-xs transition-colors text-center">
+              View Detailed Compensation Breakdown
+            </button>
+          </div>
+
+          <!-- Geospatial Status Bar -->
+          <div class="absolute bottom-0 left-0 right-0 bg-primary-container/95 backdrop-blur-md px-4 py-1.5 text-on-primary-container flex items-center justify-between font-code-num text-[11px] z-10">
+            <div class="flex items-center gap-4">
+              <span>Scale 1:2,500</span>
+              <span class="hidden md:inline">Grid: WGS 84 / UTM 43N</span>
+              <span class="hidden sm:inline">Active Layer: High-Res Google Satellite</span>
+            </div>
+            <div class="flex items-center gap-1.5 text-secondary-container">
+              <span class="map-satellite-status w-1.5 h-1.5 rounded-full bg-secondary-container animate-pulse"></span>
+              <span>Government Bhoomi Spatial Sync Active</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== VIEW 4: LAND PLOTS & RECORDS EXPANDED ==================== -->
     <div id="view-parcels" class="hidden flex flex-col gap-6">
       <div class="bg-surface-container-lowest p-6 rounded-xl shadow-sm border border-surface-container">
         <div class="flex items-center justify-between mb-4">
@@ -762,22 +903,7 @@
       </div>
     </div>
 
-    <!-- ==================== VIEW 3: GIS SPATIAL VIEW ==================== -->
-    <div id="view-gis" class="hidden flex flex-col gap-6">
-      <div class="bg-surface-container-lowest p-6 rounded-xl shadow-sm border border-surface-container">
-        <h1 class="font-headline font-bold text-2xl text-on-surface mb-2">Interactive Map View (Satellite Cadastre)</h1>
-        <p class="text-xs text-on-surface-variant mb-4">High-resolution Google Maps Satellite imagery overlaid with official cadastral boundaries.</p>
-        <div class="p-4 bg-surface-container-low rounded-xl text-xs flex items-center justify-between">
-          <div class="flex items-center gap-2">
-            <span class="material-symbols-outlined text-secondary">explore</span>
-            <span>Interactive map is active on the <strong>Overview</strong> dashboard. Click any plot to view legal compensation details.</span>
-          </div>
-          <button onclick="switchView('overview')" class="bg-primary text-on-primary px-3 py-1.5 rounded font-semibold">View on Dashboard</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- ==================== VIEW 4: WORKFLOWS & APPROVALS ==================== -->
+    <!-- ==================== VIEW 5: WORKFLOWS & APPROVALS ==================== -->
     <div id="view-workflows" class="hidden flex flex-col gap-6">
       <div class="bg-surface-container-lowest p-6 rounded-xl shadow-sm border border-surface-container">
         <div class="flex items-center justify-between mb-4">
@@ -812,7 +938,7 @@
       </div>
     </div>
 
-    <!-- ==================== VIEW 5: FIELD SURVEY & VERIFICATION ==================== -->
+    <!-- ==================== VIEW 6: FIELD SURVEY & VERIFICATION ==================== -->
     <div id="view-survey" class="hidden flex flex-col gap-6">
       <div class="flex items-center justify-between bg-surface-container-lowest p-4 rounded-xl border border-surface-container">
         <div>
@@ -894,6 +1020,80 @@
           <div>
             <div class="text-xs font-semibold text-on-surface mb-2">Demarcated Boundary Coordinates:</div>
             <div id="surveyWaypointsContainer" class="space-y-1.5 max-h-48 overflow-y-auto"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== VIEW 7: LAND DOCUMENTS & RECORDS ==================== -->
+    <div id="view-documents" class="hidden flex flex-col gap-6">
+      <div class="bg-surface-container-lowest p-6 rounded-xl shadow-sm border border-surface-container">
+        <h1 class="font-headline font-bold text-2xl text-on-surface mb-2">Land Documents & Official Records</h1>
+        <p class="text-xs text-on-surface-variant mb-6">Certified legal repositories, 7/12 extracts, and gazette award notices</p>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="p-4 bg-surface-container-low rounded-xl border border-surface-container">
+            <div class="flex items-center gap-2 text-primary font-bold text-sm mb-1">
+              <span class="material-symbols-outlined">description</span>
+              <span>7/12 Land Records (RoR)</span>
+            </div>
+            <p class="text-xs text-on-surface-variant mb-3">528 computerized extracts synchronized with Mahabhulekh cadastre.</p>
+            <button onclick="showToast('Exporting 7/12 batch...')" class="text-secondary font-semibold text-xs hover:underline">Download All (ZIP)</button>
+          </div>
+          <div class="p-4 bg-surface-container-low rounded-xl border border-surface-container">
+            <div class="flex items-center gap-2 text-primary font-bold text-sm mb-1">
+              <span class="material-symbols-outlined">gavel</span>
+              <span>Gazette Declarations</span>
+            </div>
+            <p class="text-xs text-on-surface-variant mb-3">Section 3A, 3D, and Section 19 statutory notifications.</p>
+            <button onclick="document.getElementById('modalGazette').classList.remove('hidden')" class="text-secondary font-semibold text-xs hover:underline">View Official Gazette</button>
+          </div>
+          <div class="p-4 bg-surface-container-low rounded-xl border border-surface-container">
+            <div class="flex items-center gap-2 text-primary font-bold text-sm mb-1">
+              <span class="material-symbols-outlined">payments</span>
+              <span>PFMS Payment Vouchers</span>
+            </div>
+            <p class="text-xs text-on-surface-variant mb-3">Direct Benefit Transfer bank credit confirmation receipts.</p>
+            <button onclick="showToast('PFMS Ledger downloaded.')" class="text-secondary font-semibold text-xs hover:underline">Download Escrow Ledger</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== VIEW 8: PROGRESS REPORTS ==================== -->
+    <div id="view-reports" class="hidden flex flex-col gap-6">
+      <div class="bg-surface-container-lowest p-6 rounded-xl shadow-sm border border-surface-container">
+        <h1 class="font-headline font-bold text-2xl text-on-surface mb-2">Progress Reports & Executive Analytics</h1>
+        <p class="text-xs text-on-surface-variant mb-6">Detailed corridor acquisition milestone metrics and SLAO benchmark reports</p>
+        <div class="p-4 bg-surface-container-low rounded-xl border border-surface-container text-xs">
+          <p class="font-semibold text-on-surface mb-1">Project Milestone Status: <span class="text-secondary font-bold">+18 Days Ahead of Schedule</span></p>
+          <p class="text-on-surface-variant">All 528 plots are tracked under the Smart India Hackathon (SIH-26016) monitoring pipeline.</p>
+          <button onclick="showToast('Generating official progress dossier...')" class="mt-3 bg-primary text-on-primary px-3.5 py-1.5 rounded-lg font-semibold">
+            Generate Comprehensive PDF Report
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== VIEW 9: PUBLIC COMPLAINTS & INQUIRIES ==================== -->
+    <div id="view-complaints" class="hidden flex flex-col gap-6">
+      <div class="bg-surface-container-lowest p-6 rounded-xl shadow-sm border border-surface-container">
+        <h1 class="font-headline font-bold text-2xl text-on-surface mb-2">Public Complaints & Citizen Inquiries</h1>
+        <p class="text-xs text-on-surface-variant mb-6">Citizen grievance portal for title objections, partition disputes, and compensation inquiries</p>
+        <div class="p-4 bg-surface-container-low rounded-xl border border-surface-container text-xs space-y-3">
+          <div class="flex items-center justify-between border-b border-surface-container pb-2">
+            <div>
+              <span class="font-bold text-on-surface">Appeal #GR-2024-88 — Survey No. 144/2 (Bhiwapur)</span>
+              <div class="text-on-surface-variant text-[11px]">Ganesh K. Thakre • Boundary overlap objection</div>
+            </div>
+            <span class="bg-error-container text-on-error-container font-bold px-2 py-0.5 rounded text-[10px]">Hearing: 24 Oct 2024</span>
+          </div>
+          <div class="flex items-center justify-between">
+            <div>
+              <span class="font-bold text-on-surface">Inquiry #INQ-2024-12 — Survey No. 146/4 (Kuhi)</span>
+              <div class="text-on-surface-variant text-[11px]">Vitthalrao S. Gaikwad • Tree asset valuation review</div>
+            </div>
+            <span class="bg-secondary-container text-on-secondary-container font-bold px-2 py-0.5 rounded text-[10px]">Resolved</span>
           </div>
         </div>
       </div>
@@ -1015,27 +1215,52 @@
       <form id="formNewProject" class="p-6 space-y-4 text-xs">
         <div>
           <label class="block font-semibold text-on-surface mb-1">Project Highway Corridor</label>
-          <input type="text" required value="NH-53 Bypass Expansion — Package 2A" class="w-full p-2 rounded-lg bg-surface-container-low border border-surface-container text-xs">
+          <input id="projInputTitle" type="text" required value="NH-53 Bypass Expansion — Package 2A" class="w-full p-2 rounded-lg bg-surface-container-low border border-surface-container text-xs">
         </div>
         <div class="grid grid-cols-2 gap-3">
           <div>
             <label class="block font-semibold text-on-surface mb-1">Section 3A Public Notice No.</label>
-            <input type="text" required value="S.O. 2045(E)" class="w-full p-2 rounded-lg bg-surface-container-low border border-surface-container text-xs">
+            <input id="projInputNotice" type="text" required value="S.O. 2045(E)" class="w-full p-2 rounded-lg bg-surface-container-low border border-surface-container text-xs">
           </div>
           <div>
             <label class="block font-semibold text-on-surface mb-1">Target Land (Hectares)</label>
-            <input type="number" step="0.1" required value="120.5" class="w-full p-2 rounded-lg bg-surface-container-low border border-surface-container text-xs">
+            <input id="projInputTarget" type="number" step="0.1" required value="640" class="w-full p-2 rounded-lg bg-surface-container-low border border-surface-container text-xs">
           </div>
         </div>
         <div>
-          <label class="block font-semibold text-on-surface mb-1">Designated Officer</label>
-          <input type="text" value="Dr. Rajeshwar Rao - Special Land Acquisition Officer" class="w-full p-2 rounded-lg bg-surface-container-low border border-surface-container text-xs">
+          <label class="block font-semibold text-on-surface mb-1">Route Alignment Corridor</label>
+          <input id="projInputCorridor" type="text" value="Nagpur — Bhandara Highway Link" class="w-full p-2 rounded-lg bg-surface-container-low border border-surface-container text-xs">
+        </div>
+        <div>
+          <label class="block font-semibold text-on-surface mb-1">Attach Boundary File (Optional)</label>
+          <input type="file" accept=".geojson,.kml,.shp,.csv" class="w-full p-1.5 rounded-lg bg-surface-container-low border border-surface-container text-xs">
         </div>
         <div class="flex justify-end gap-2 pt-2">
           <button type="button" onclick="document.getElementById('modalNewProject').classList.add('hidden')" class="px-3 py-1.5 rounded-lg bg-surface-container text-on-surface font-semibold">Cancel</button>
           <button type="submit" class="px-4 py-1.5 rounded-lg bg-primary text-on-primary font-semibold">Create Project</button>
         </div>
       </form>
+    </div>
+  </div>
+
+  <!-- Modal: Bulk GeoJSON / Project File Upload -->
+  <div id="modalBulkUpload" class="fixed inset-0 bg-primary/40 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+    <div class="bg-surface-container-lowest rounded-2xl shadow-2xl border border-surface-container w-full max-w-lg overflow-hidden">
+      <div class="p-5 bg-surface-container-low border-b border-surface-container flex items-center justify-between">
+        <h3 class="font-headline font-bold text-base text-on-surface">Upload Project Boundary File</h3>
+        <button id="btnCloseBulkUpload" class="p-1 rounded-lg hover:bg-surface-container-high text-on-surface"><span class="material-symbols-outlined text-[18px]">close</span></button>
+      </div>
+      <div class="p-6 space-y-4 text-xs">
+        <div onclick="document.getElementById('projectFileInput').click()" class="border-2 border-dashed border-outline-variant p-8 rounded-xl text-center flex flex-col items-center justify-center gap-2 hover:bg-surface-container-low cursor-pointer">
+          <span class="material-symbols-outlined text-[36px] text-secondary">cloud_upload</span>
+          <div class="font-semibold text-on-surface">Click to choose or drop a Project File here</div>
+          <div class="text-on-surface-variant text-[11px]">Supports GeoJSON (EPSG:4326), KML Corridor, Shapefiles, and CSV</div>
+        </div>
+        <div class="flex justify-end gap-2">
+          <button onclick="document.getElementById('modalBulkUpload').classList.add('hidden')" class="px-3 py-1.5 rounded-lg bg-surface-container text-on-surface font-semibold">Close</button>
+          <button onclick="document.getElementById('projectFileInput').click()" class="px-4 py-1.5 rounded-lg bg-primary text-on-primary font-semibold">Select File</button>
+        </div>
+      </div>
     </div>
   </div>
 
