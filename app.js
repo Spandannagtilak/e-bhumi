@@ -1,7 +1,7 @@
 /**
  * E-Bhumi - National Land & Citizen Portal
  * SIH-26016 Model Engine
- * Application Controller, Google Satellite GIS Engine & Workflow Manager
+ * Application Controller, Interactive Google Satellite GIS Engine & Workflow Manager
  */
 
 // --- APPLICATION STATE ---
@@ -9,10 +9,73 @@ const AppState = {
   currentView: 'overview',
   activeParcelId: 'MH-NGP-4029',
   pendingApprovalsCount: 6,
-  googleMap: null,
-  mapType: 'satellite', // 'satellite' | 'hybrid' | 'roadmap'
-  parcelPolygons: [],
+  overviewMap: null,
+  dedicatedMap: null,
+  overviewPolygons: [],
+  dedicatedPolygons: [],
   googleMapsLoaded: false,
+  projects: [
+    {
+      id: 'PKG-4B',
+      title: 'NH-44 Express Corridor Expansion — Package 4B',
+      corridor: 'Nagpur — Hinganghat Highway Route',
+      notification: 'S.O. 1842(E) / Section 3A Public Notice',
+      district: 'Nagpur Rural (Umred, Bhiwapur, Kuhi)',
+      marker: 'Km 114 to Km 168',
+      targetHa: 1687,
+      acquiredHa: 1018.58,
+      percent: 60.4,
+      totalPlots: 528,
+      clearPlots: 295,
+      processPlots: 188,
+      reviewPlots: 45,
+      escrowCr: 620.00,
+      disbursedCr: 362.50,
+      status: 'ACTIVE CORRIDOR',
+      statusClass: 'bg-secondary-container text-on-secondary-container',
+      incharge: 'Dr. Rajeshwar Rao (IAS) - Special Land Acquisition Officer'
+    },
+    {
+      id: 'PKG-2A',
+      title: 'NH-53 Bypass Expansion — Package 2A',
+      corridor: 'Nagpur — Bhandara Highway Link',
+      notification: 'S.O. 2045(E) / Section 3A Public Notice',
+      district: 'Bhandara & Nagpur East',
+      marker: 'Km 42 to Km 98',
+      targetHa: 640,
+      acquiredHa: 412.00,
+      percent: 64.3,
+      totalPlots: 284,
+      clearPlots: 190,
+      processPlots: 82,
+      reviewPlots: 12,
+      escrowCr: 280.00,
+      disbursedCr: 178.40,
+      status: 'FIELD SURVEY ACTIVE',
+      statusClass: 'bg-surface-container-high text-on-surface',
+      incharge: 'Shri V. K. Deshmukh (SLAO-082)'
+    },
+    {
+      id: 'FEEDER-01',
+      title: 'Samruddhi Mahamarg Feeder Link — Phase 1',
+      corridor: 'Wardha — Butibori Expressway Connector',
+      notification: 'S.O. 1190(E) / Section 3D Final Award',
+      district: 'Wardha & Butibori',
+      marker: 'Km 0 to Km 34',
+      targetHa: 820,
+      acquiredHa: 740.00,
+      percent: 90.2,
+      totalPlots: 390,
+      clearPlots: 355,
+      processPlots: 31,
+      reviewPlots: 4,
+      escrowCr: 410.00,
+      disbursedCr: 382.10,
+      status: 'FINAL DISBURSAL (90%)',
+      statusClass: 'bg-secondary-container text-on-secondary-container',
+      incharge: 'Smt. Anjali Sharma (CALA / SDM)'
+    }
+  ],
   parcels: [
     {
       id: 'MH-NGP-4028',
@@ -231,8 +294,9 @@ const AppState = {
 // --- INITIALIZATION ---
 document.addEventListener('DOMContentLoaded', () => {
   initNavigation();
-  initGoogleSatelliteMap();
+  initGoogleSatelliteMaps();
   initSvgMapFallback();
+  initProjectsModule();
   initParcelsTable();
   initApprovalQueue();
   initSurveyModule();
@@ -240,128 +304,36 @@ document.addEventListener('DOMContentLoaded', () => {
   updatePendingBadge();
 });
 
-// --- GOOGLE SATELLITE MAP ENGINE ---
-function initGoogleSatelliteMap() {
-  const mapContainer = document.getElementById('googleMapContainer');
-  if (!mapContainer) return;
+// --- GOOGLE SATELLITE MAP ENGINE (SUPPORTING BOTH OVERVIEW & DEDICATED GIS MAP) ---
+function initGoogleSatelliteMaps() {
+  const centerCoords = { lat: 20.8980, lng: 79.0265 }; // Nagpur Rural Highway corridor
 
-  // Check if Google Maps SDK loaded
   if (typeof google !== 'undefined' && google.maps) {
     try {
-      const centerCoords = { lat: 20.8980, lng: 79.0265 }; // Nagpur Rural Highway Alignment
+      // 1. Overview Map
+      const overviewContainer = document.getElementById('googleMapContainer');
+      if (overviewContainer) {
+        AppState.overviewMap = createGoogleMapInstance(overviewContainer, centerCoords, 16, AppState.overviewPolygons);
+      }
 
-      AppState.googleMap = new google.maps.Map(mapContainer, {
-        center: centerCoords,
-        zoom: 16,
-        mapTypeId: google.maps.MapTypeId.SATELLITE,
-        tilt: 0,
-        mapTypeControl: false,
-        streetViewControl: false,
-        fullscreenControl: false,
-        zoomControl: false,
-        styles: [
-          {
-            featureType: 'poi',
-            elementType: 'labels',
-            stylers: [{ visibility: 'off' }]
-          }
-        ]
-      });
+      // 2. Dedicated Full-Height Interactive Map View
+      const dedicatedContainer = document.getElementById('dedicatedGoogleMap');
+      if (dedicatedContainer) {
+        AppState.dedicatedMap = createGoogleMapInstance(dedicatedContainer, centerCoords, 16, AppState.dedicatedPolygons);
+      }
 
       AppState.googleMapsLoaded = true;
-      document.getElementById('mapSatelliteStatus').textContent = 'Google Maps Satellite View Active';
-      document.getElementById('mapSatelliteStatus').className = 'w-2 h-2 rounded-full bg-secondary inline-block animate-pulse';
 
-      // Draw Highway Alignment Ribbon
-      const highwayRoute = [
-        { lat: 20.8930, lng: 79.0200 },
-        { lat: 20.8955, lng: 79.0235 },
-        { lat: 20.8980, lng: 79.0265 },
-        { lat: 20.9015, lng: 79.0305 },
-        { lat: 20.9050, lng: 79.0345 }
-      ];
-
-      new google.maps.Polyline({
-        path: highwayRoute,
-        geodesic: true,
-        strokeColor: '#fde047',
-        strokeOpacity: 0.9,
-        strokeWeight: 4,
-        map: AppState.googleMap
+      // Update status indicators
+      document.querySelectorAll('.map-satellite-status').forEach(el => {
+        el.textContent = 'Google Maps Satellite View Active';
+        el.className = 'w-2 h-2 rounded-full bg-secondary inline-block animate-pulse';
       });
 
-      // Draw Land Plot Polygons
-      AppState.parcels.forEach(parcel => {
-        if (!parcel.bounds) return;
-
-        let fillColor = '#82f5c1';
-        let strokeColor = '#006c4a';
-
-        if (parcel.id === 'MH-NGP-4029') {
-          fillColor = '#fde68a';
-          strokeColor = '#92400e';
-        } else if (parcel.stage === 'disputed') {
-          fillColor = '#ffdad6';
-          strokeColor = '#ba1a1a';
-        } else if (parcel.stage === 'surveyed') {
-          fillColor = '#cce5ff';
-          strokeColor = '#188ace';
-        } else if (parcel.stage === 'valuation') {
-          fillColor = '#fde68a';
-          strokeColor = '#92400e';
-        }
-
-        const poly = new google.maps.Polygon({
-          paths: parcel.bounds,
-          strokeColor: strokeColor,
-          strokeOpacity: 0.95,
-          strokeWeight: parcel.id === AppState.activeParcelId ? 4 : 2,
-          fillColor: fillColor,
-          fillOpacity: parcel.id === AppState.activeParcelId ? 0.65 : 0.45,
-          map: AppState.googleMap,
-          clickable: true
-        });
-
-        poly.addListener('click', () => {
-          selectParcel(parcel.id);
-        });
-
-        poly.addListener('mouseover', () => {
-          poly.setOptions({ fillOpacity: 0.8 });
-        });
-
-        poly.addListener('mouseout', () => {
-          poly.setOptions({ fillOpacity: parcel.id === AppState.activeParcelId ? 0.65 : 0.45 });
-        });
-
-        // Add Centroid Marker / Label
-        new google.maps.Marker({
-          position: { lat: (parcel.bounds[0].lat + parcel.bounds[2].lat) / 2, lng: (parcel.bounds[0].lng + parcel.bounds[2].lng) / 2 },
-          map: AppState.googleMap,
-          label: {
-            text: `#${parcel.id.replace('MH-NGP-', '')}`,
-            color: '#ffffff',
-            fontWeight: 'bold',
-            fontSize: '11px'
-          },
-          icon: {
-            path: google.maps.SymbolPath.CIRCLE,
-            scale: 14,
-            fillColor: strokeColor,
-            fillOpacity: 0.95,
-            strokeWeight: 1,
-            strokeColor: '#ffffff'
-          },
-          title: `Plot #${parcel.id} - ${parcel.owner}`
-        });
-
-        AppState.parcelPolygons.push({ id: parcel.id, polygon: poly });
-      });
-
-      // Hide fallback SVG
+      // Hide fallback SVG on overview
       const fallbackSvg = document.getElementById('gisMapSvgContainer');
       if (fallbackSvg) fallbackSvg.classList.add('hidden');
-      mapContainer.classList.remove('hidden');
+      if (overviewContainer) overviewContainer.classList.remove('hidden');
 
     } catch (e) {
       console.warn('Google Maps initialization fallback to SVG canvas:', e);
@@ -371,17 +343,136 @@ function initGoogleSatelliteMap() {
     activateSvgFallback();
   }
 
-  // Setup Map Controls
-  const btnSat = document.getElementById('btnMapSatellite');
-  const btnHybrid = document.getElementById('btnMapHybrid');
-  const btnTerrain = document.getElementById('btnMapTerrain');
-  const btnZoomIn = document.getElementById('btn-map-zoom-in');
-  const btnZoomOut = document.getElementById('btn-map-zoom-out');
-  const btnCenter = document.getElementById('btn-map-center');
+  // Setup Overview Map Controls
+  bindMapControls(AppState.overviewMap, 'btnMapSatellite', 'btnMapHybrid', 'btnMapTerrain', 'btn-map-zoom-in', 'btn-map-zoom-out', 'btn-map-center');
+
+  // Setup Dedicated Map View Controls
+  bindMapControls(AppState.dedicatedMap, 'btnDedicatedSatellite', 'btnDedicatedHybrid', 'btnDedicatedTerrain', 'btn-dedicated-zoom-in', 'btn-dedicated-zoom-out', 'btn-dedicated-center');
+}
+
+function createGoogleMapInstance(container, center, zoom, polygonArray) {
+  const map = new google.maps.Map(container, {
+    center: center,
+    zoom: zoom,
+    mapTypeId: google.maps.MapTypeId.SATELLITE,
+    tilt: 0,
+    mapTypeControl: false,
+    streetViewControl: false,
+    fullscreenControl: false,
+    zoomControl: false,
+    styles: [
+      {
+        featureType: 'poi',
+        elementType: 'labels',
+        stylers: [{ visibility: 'off' }]
+      }
+    ]
+  });
+
+  // Draw Highway Alignment Ribbon
+  const highwayRoute = [
+    { lat: 20.8930, lng: 79.0200 },
+    { lat: 20.8955, lng: 79.0235 },
+    { lat: 20.8980, lng: 79.0265 },
+    { lat: 20.9015, lng: 79.0305 },
+    { lat: 20.9050, lng: 79.0345 }
+  ];
+
+  new google.maps.Polyline({
+    path: highwayRoute,
+    geodesic: true,
+    strokeColor: '#fde047',
+    strokeOpacity: 0.9,
+    strokeWeight: 4,
+    map: map
+  });
+
+  // Draw Land Plot Polygons
+  AppState.parcels.forEach(parcel => {
+    if (!parcel.bounds) return;
+
+    let fillColor = '#82f5c1';
+    let strokeColor = '#006c4a';
+
+    if (parcel.id === 'MH-NGP-4029') {
+      fillColor = '#fde68a';
+      strokeColor = '#92400e';
+    } else if (parcel.stage === 'disputed') {
+      fillColor = '#ffdad6';
+      strokeColor = '#ba1a1a';
+    } else if (parcel.stage === 'surveyed') {
+      fillColor = '#cce5ff';
+      strokeColor = '#188ace';
+    } else if (parcel.stage === 'valuation') {
+      fillColor = '#fde68a';
+      strokeColor = '#92400e';
+    }
+
+    const poly = new google.maps.Polygon({
+      paths: parcel.bounds,
+      strokeColor: strokeColor,
+      strokeOpacity: 0.95,
+      strokeWeight: parcel.id === AppState.activeParcelId ? 4 : 2,
+      fillColor: fillColor,
+      fillOpacity: parcel.id === AppState.activeParcelId ? 0.65 : 0.45,
+      map: map,
+      clickable: true
+    });
+
+    poly.addListener('click', () => {
+      selectParcel(parcel.id);
+    });
+
+    poly.addListener('mouseover', () => {
+      poly.setOptions({ fillOpacity: 0.8 });
+    });
+
+    poly.addListener('mouseout', () => {
+      poly.setOptions({ fillOpacity: parcel.id === AppState.activeParcelId ? 0.65 : 0.45 });
+    });
+
+    // Centroid Marker with label
+    new google.maps.Marker({
+      position: {
+        lat: (parcel.bounds[0].lat + parcel.bounds[2].lat) / 2,
+        lng: (parcel.bounds[0].lng + parcel.bounds[2].lng) / 2
+      },
+      map: map,
+      label: {
+        text: `#${parcel.id.replace('MH-NGP-', '')}`,
+        color: '#ffffff',
+        fontWeight: 'bold',
+        fontSize: '11px'
+      },
+      icon: {
+        path: google.maps.SymbolPath.CIRCLE,
+        scale: 14,
+        fillColor: strokeColor,
+        fillOpacity: 0.95,
+        strokeWeight: 1,
+        strokeColor: '#ffffff'
+      },
+      title: `Plot #${parcel.id} - ${parcel.owner}`
+    });
+
+    polygonArray.push({ id: parcel.id, polygon: poly });
+  });
+
+  return map;
+}
+
+function bindMapControls(mapInstance, satBtnId, hybridBtnId, terrainBtnId, zoomInId, zoomOutId, centerId) {
+  const btnSat = document.getElementById(satBtnId);
+  const btnHybrid = document.getElementById(hybridBtnId);
+  const btnTerrain = document.getElementById(terrainBtnId);
+  const btnZoomIn = document.getElementById(zoomInId);
+  const btnZoomOut = document.getElementById(zoomOutId);
+  const btnCenter = document.getElementById(centerId);
 
   if (btnSat) {
     btnSat.addEventListener('click', () => {
-      if (AppState.googleMap) AppState.googleMap.setMapTypeId(google.maps.MapTypeId.SATELLITE);
+      const activeMap = mapInstance || AppState.overviewMap || AppState.dedicatedMap;
+      if (activeMap) activeMap.setMapTypeId(google.maps.MapTypeId.SATELLITE);
       setActiveMapBtn(btnSat);
       showToast('Switched to High-Resolution Satellite View');
     });
@@ -389,49 +480,52 @@ function initGoogleSatelliteMap() {
 
   if (btnHybrid) {
     btnHybrid.addEventListener('click', () => {
-      if (AppState.googleMap) AppState.googleMap.setMapTypeId(google.maps.MapTypeId.HYBRID);
+      const activeMap = mapInstance || AppState.overviewMap || AppState.dedicatedMap;
+      if (activeMap) activeMap.setMapTypeId(google.maps.MapTypeId.HYBRID);
       setActiveMapBtn(btnHybrid);
-      showToast('Switched to Satellite + Road Names (Hybrid View)');
+      showToast('Switched to Satellite + Highway Labels (Hybrid View)');
     });
   }
 
   if (btnTerrain) {
     btnTerrain.addEventListener('click', () => {
-      if (AppState.googleMap) AppState.googleMap.setMapTypeId(google.maps.MapTypeId.ROADMAP);
+      const activeMap = mapInstance || AppState.overviewMap || AppState.dedicatedMap;
+      if (activeMap) activeMap.setMapTypeId(google.maps.MapTypeId.ROADMAP);
       setActiveMapBtn(btnTerrain);
-      showToast('Switched to Standard Street Cadastre View');
+      showToast('Switched to Cadastral Street Map View');
     });
   }
 
   if (btnZoomIn) {
     btnZoomIn.addEventListener('click', () => {
-      if (AppState.googleMap) {
-        AppState.googleMap.setZoom(AppState.googleMap.getZoom() + 1);
-      }
+      const activeMap = mapInstance || AppState.overviewMap || AppState.dedicatedMap;
+      if (activeMap) activeMap.setZoom(activeMap.getZoom() + 1);
     });
   }
 
   if (btnZoomOut) {
     btnZoomOut.addEventListener('click', () => {
-      if (AppState.googleMap) {
-        AppState.googleMap.setZoom(AppState.googleMap.getZoom() - 1);
-      }
+      const activeMap = mapInstance || AppState.overviewMap || AppState.dedicatedMap;
+      if (activeMap) activeMap.setZoom(activeMap.getZoom() - 1);
     });
   }
 
   if (btnCenter) {
     btnCenter.addEventListener('click', () => {
-      if (AppState.googleMap) {
-        AppState.googleMap.setCenter({ lat: 20.8980, lng: 79.0265 });
-        AppState.googleMap.setZoom(16);
+      const activeMap = mapInstance || AppState.overviewMap || AppState.dedicatedMap;
+      if (activeMap) {
+        activeMap.setCenter({ lat: 20.8980, lng: 79.0265 });
+        activeMap.setZoom(16);
       }
-      showToast('Map centered on Nagpur Rural Ch. Km 138.62');
+      showToast('Map centered on Nagpur Rural corridor (Km 138.62)');
     });
   }
 }
 
 function setActiveMapBtn(activeBtn) {
-  document.querySelectorAll('[data-map-layer]').forEach(btn => {
+  const parent = activeBtn.parentElement;
+  if (!parent) return;
+  parent.querySelectorAll('button').forEach(btn => {
     btn.classList.remove('bg-primary', 'text-on-primary');
     btn.classList.add('bg-surface-container-lowest', 'text-on-surface-variant');
   });
@@ -444,10 +538,9 @@ function activateSvgFallback() {
   const fallbackSvg = document.getElementById('gisMapSvgContainer');
   if (mapContainer) mapContainer.classList.add('hidden');
   if (fallbackSvg) fallbackSvg.classList.remove('hidden');
-  const statusEl = document.getElementById('mapSatelliteStatus');
-  if (statusEl) {
-    statusEl.textContent = 'High-Precision Vector Cadastre Active';
-  }
+  document.querySelectorAll('.map-satellite-status').forEach(el => {
+    el.textContent = 'High-Precision Vector Cadastre Active';
+  });
 }
 
 function initSvgMapFallback() {
@@ -478,7 +571,7 @@ function initSvgMapFallback() {
   });
 }
 
-// --- NAVIGATION & VIEWS ---
+// --- NAVIGATION & VIEWS CONTROLLER (ZERO COLOR BLEEDING) ---
 function initNavigation() {
   const navLinks = document.querySelectorAll('[data-nav-view]');
   navLinks.forEach(link => {
@@ -503,23 +596,40 @@ function switchView(viewName) {
   AppState.currentView = viewName;
   window.location.hash = viewName;
 
+  // STRICT TAB HIGHLIGHTING: ONLY THE SINGLE SELECTED TAB GETS HIGHLIGHTED
   document.querySelectorAll('[data-nav-view]').forEach(item => {
-    const isActive = item.getAttribute('data-nav-view') === viewName;
-    if (isActive) {
-      item.classList.add('bg-primary-container', 'text-on-primary-container', 'font-semibold');
-      item.classList.remove('text-on-surface-variant', 'hover:bg-surface-container-high');
+    const target = item.getAttribute('data-nav-view');
+    const isCurrent = (target === viewName);
+
+    // Remove ALL possible active and inactive styles completely
+    item.classList.remove(
+      'bg-primary', 'bg-primary-container',
+      'text-on-primary', 'text-on-primary-container',
+      'text-on-surface-variant',
+      'hover:bg-surface-container-high', 'hover:text-on-surface',
+      'font-semibold'
+    );
+
+    if (isCurrent) {
+      // Solid dark active style exactly like the reference design
+      item.classList.add('bg-primary', 'text-on-primary', 'font-semibold');
     } else {
-      item.classList.remove('bg-primary-container', 'text-on-primary-container', 'font-semibold');
-      item.classList.add('text-on-surface-variant', 'hover:bg-surface-container-high');
+      // Clean inactive style
+      item.classList.add('text-on-surface-variant', 'hover:bg-surface-container-high', 'hover:text-on-surface');
     }
   });
 
+  // Map view containers
   const views = {
     overview: document.getElementById('view-overview'),
+    projects: document.getElementById('view-projects'),
     parcels: document.getElementById('view-parcels'),
     gis: document.getElementById('view-gis'),
     workflows: document.getElementById('view-workflows'),
-    survey: document.getElementById('view-survey')
+    survey: document.getElementById('view-survey'),
+    documents: document.getElementById('view-documents'),
+    reports: document.getElementById('view-reports'),
+    complaints: document.getElementById('view-complaints')
   };
 
   Object.keys(views).forEach(key => {
@@ -534,10 +644,200 @@ function switchView(viewName) {
 
   window.scrollTo({ top: 0, behavior: 'smooth' });
 
-  // Refresh Google Maps size if switching to overview
-  if (viewName === 'overview' && AppState.googleMap) {
-    google.maps.event.trigger(AppState.googleMap, 'resize');
+  // Trigger Google Maps resize when switching views
+  setTimeout(() => {
+    if (viewName === 'overview' && AppState.overviewMap) {
+      google.maps.event.trigger(AppState.overviewMap, 'resize');
+      AppState.overviewMap.setCenter({ lat: 20.8980, lng: 79.0265 });
+    } else if (viewName === 'gis' && AppState.dedicatedMap) {
+      google.maps.event.trigger(AppState.dedicatedMap, 'resize');
+      AppState.dedicatedMap.setCenter({ lat: 20.8980, lng: 79.0265 });
+    }
+  }, 100);
+}
+
+// --- PROJECTS MODULE ---
+function initProjectsModule() {
+  renderProjectsList();
+
+  // New Project Form in Projects Tab
+  const formNewProj = document.getElementById('formNewProject');
+  if (formNewProj) {
+    formNewProj.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const titleInput = document.getElementById('projInputTitle');
+      const corridorInput = document.getElementById('projInputCorridor');
+      const noticeInput = document.getElementById('projInputNotice');
+      const targetInput = document.getElementById('projInputTarget');
+
+      const newProj = {
+        id: 'PKG-' + (AppState.projects.length + 1) + 'A',
+        title: titleInput ? titleInput.value : 'New Highway Corridor Project',
+        corridor: corridorInput ? corridorInput.value : 'Inter-State Expressway Expansion',
+        notification: noticeInput ? noticeInput.value : 'S.O. 2480(E) / Section 3A',
+        district: 'Nagpur & Wardha Rural',
+        marker: 'Km 0 to Km 54',
+        targetHa: targetInput ? parseFloat(targetInput.value) || 500 : 500,
+        acquiredHa: 0,
+        percent: 0,
+        totalPlots: 0,
+        clearPlots: 0,
+        processPlots: 0,
+        reviewPlots: 0,
+        escrowCr: 250.00,
+        disbursedCr: 0.00,
+        status: 'JUST INITIALIZED',
+        statusClass: 'bg-surface-container text-on-surface',
+        incharge: 'Special Land Acquisition Officer (CALA)'
+      };
+
+      AppState.projects.unshift(newProj);
+      renderProjectsList();
+
+      const modal = document.getElementById('modalNewProject');
+      if (modal) modal.classList.add('hidden');
+      formNewProj.reset();
+
+      showToast(`✓ New Project "${newProj.title}" registered successfully!`);
+    });
   }
+
+  // Upload Project File Dropzone & Input
+  const fileInput = document.getElementById('projectFileInput');
+  const uploadDropzone = document.getElementById('projectUploadDropzone');
+
+  if (fileInput) {
+    fileInput.addEventListener('change', (e) => {
+      if (e.target.files && e.target.files[0]) {
+        handleProjectFileUpload(e.target.files[0]);
+      }
+    });
+  }
+
+  if (uploadDropzone) {
+    uploadDropzone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      uploadDropzone.classList.add('border-primary', 'bg-surface-container-high');
+    });
+
+    uploadDropzone.addEventListener('dragleave', () => {
+      uploadDropzone.classList.remove('border-primary', 'bg-surface-container-high');
+    });
+
+    uploadDropzone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      uploadDropzone.classList.remove('border-primary', 'bg-surface-container-high');
+      if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+        handleProjectFileUpload(e.dataTransfer.files[0]);
+      }
+    });
+  }
+}
+
+function handleProjectFileUpload(file) {
+  const fileName = file.name;
+  showToast(`Parsing ${fileName} (GeoJSON / Spatial Cadastre)...`);
+
+  setTimeout(() => {
+    const importedProj = {
+      id: 'IMP-' + Math.floor(Math.random() * 900 + 100),
+      title: fileName.replace(/\.[^/.]+$/, '').replace(/[-_]/g, ' ').toUpperCase() + ' Corridor',
+      corridor: 'Imported Route Alignment',
+      notification: 'S.O. Verified / GeoJSON Spatial File',
+      district: 'Maharashtra Cadastre Zone',
+      marker: 'Km 00+000 to Km 64+200',
+      targetHa: 845.2,
+      acquiredHa: 512.4,
+      percent: 60.6,
+      totalPlots: 312,
+      clearPlots: 198,
+      processPlots: 96,
+      reviewPlots: 18,
+      escrowCr: 340.00,
+      disbursedCr: 210.50,
+      status: 'IMPORTED FROM FILE',
+      statusClass: 'bg-secondary-container text-on-secondary-container',
+      incharge: 'Dr. Rajeshwar Rao (SLAO)'
+    };
+
+    AppState.projects.unshift(importedProj);
+    renderProjectsList();
+
+    const modal = document.getElementById('modalBulkUpload');
+    if (modal) modal.classList.add('hidden');
+
+    showToast(`✓ Successfully imported ${fileName} with 312 Cadastral Plots!`);
+  }, 1200);
+}
+
+function renderProjectsList() {
+  const container = document.getElementById('projectsListContainer');
+  if (!container) return;
+
+  const countBadge = document.getElementById('activeProjectsCount');
+  if (countBadge) countBadge.textContent = AppState.projects.length;
+
+  container.innerHTML = '';
+
+  AppState.projects.forEach(proj => {
+    const card = document.createElement('div');
+    card.className = 'bg-surface-container-lowest p-6 rounded-xl shadow-sm border border-surface-container/80 flex flex-col justify-between gap-4 hover:shadow-md transition-shadow';
+    card.innerHTML = `
+      <div>
+        <div class="flex items-start justify-between gap-3 mb-2">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="font-headline font-bold text-base text-on-surface">${proj.title}</span>
+              <span class="font-code-num text-[10px] font-bold px-2 py-0.5 rounded ${proj.statusClass}">${proj.status}</span>
+            </div>
+            <div class="text-xs text-on-surface-variant mt-1">${proj.corridor} • ${proj.district}</div>
+            <div class="text-[11px] text-on-surface-variant font-code-num mt-0.5">${proj.notification} • ${proj.marker}</div>
+          </div>
+          <span class="font-code-num text-xs bg-surface-container text-on-surface px-2 py-1 rounded font-bold">
+            ${proj.percent.toFixed(1)}% Acquired
+          </span>
+        </div>
+
+        <div class="w-full bg-surface-container-high h-2 rounded-full overflow-hidden my-3">
+          <div class="bg-secondary h-full rounded-full" style="width: ${proj.percent}%"></div>
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-surface-container-low p-3 rounded-lg text-xs">
+          <div>
+            <span class="text-on-surface-variant text-[10px] uppercase font-code-num">Target Land</span>
+            <div class="font-bold font-code-num text-on-surface">${proj.targetHa} Ha</div>
+          </div>
+          <div>
+            <span class="text-on-surface-variant text-[10px] uppercase font-code-num">Acquired Land</span>
+            <div class="font-bold font-code-num text-secondary">${proj.acquiredHa} Ha</div>
+          </div>
+          <div>
+            <span class="text-on-surface-variant text-[10px] uppercase font-code-num">Measured Plots</span>
+            <div class="font-bold font-code-num text-on-surface">${proj.totalPlots} Plots</div>
+          </div>
+          <div>
+            <span class="text-on-surface-variant text-[10px] uppercase font-code-num">Escrow Fund</span>
+            <div class="font-bold font-code-num text-on-surface">₹${proj.escrowCr} Cr</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-between pt-2 border-t border-surface-container text-xs">
+        <span class="text-[11px] text-on-surface-variant truncate">Officer: ${proj.incharge}</span>
+        <div class="flex items-center gap-2">
+          <button onclick="switchView('overview')" class="bg-primary hover:bg-primary-container text-on-primary px-3 py-1.5 rounded-lg font-semibold flex items-center gap-1 transition-colors">
+            <span>Open Dashboard</span>
+            <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+          </button>
+          <button onclick="switchView('gis')" class="bg-surface-container-high hover:bg-surface-container-highest text-on-surface px-3 py-1.5 rounded-lg font-semibold flex items-center gap-1 transition-colors">
+            <span class="material-symbols-outlined text-[14px]">map</span>
+            <span>View Map</span>
+          </button>
+        </div>
+      </div>
+    `;
+    container.appendChild(card);
+  });
 }
 
 // --- PARCEL SELECTION & DOSSIER ---
@@ -546,15 +846,19 @@ function selectParcel(parcelId) {
   const parcel = AppState.parcels.find(p => p.id === parcelId);
   if (!parcel) return;
 
-  // Pan Google Map to parcel if active
-  if (AppState.googleMap && parcel.bounds && parcel.bounds[0]) {
-    AppState.googleMap.panTo(parcel.bounds[0]);
-    AppState.parcelPolygons.forEach(item => {
-      if (item.id === parcelId) {
-        item.polygon.setOptions({ strokeWeight: 4, strokeColor: '#fde047' });
-      } else {
-        item.polygon.setOptions({ strokeWeight: 2 });
-      }
+  // Pan Google Maps if loaded
+  if (parcel.bounds && parcel.bounds[0]) {
+    if (AppState.overviewMap) AppState.overviewMap.panTo(parcel.bounds[0]);
+    if (AppState.dedicatedMap) AppState.dedicatedMap.panTo(parcel.bounds[0]);
+
+    [AppState.overviewPolygons, AppState.dedicatedPolygons].forEach(polyList => {
+      polyList.forEach(item => {
+        if (item.id === parcelId) {
+          item.polygon.setOptions({ strokeWeight: 4, strokeColor: '#fde047' });
+        } else {
+          item.polygon.setOptions({ strokeWeight: 2 });
+        }
+      });
     });
   }
 
@@ -574,6 +878,19 @@ function selectParcel(parcelId) {
   if (cardArea) cardArea.textContent = `${parcel.areaHa.toFixed(3)} Ha`;
   if (cardStatus) cardStatus.textContent = parcel.status;
   if (cardMouza) cardMouza.textContent = `Mouza ${parcel.mouza} • Nagpur District • Ch. ${parcel.chainage}`;
+
+  // Update dedicated map inspector card
+  const dedId = document.getElementById('dedicated-parcel-id');
+  const dedSurvey = document.getElementById('dedicated-survey-no');
+  const dedOwner = document.getElementById('dedicated-owner');
+  const dedValuation = document.getElementById('dedicated-valuation');
+  const dedArea = document.getElementById('dedicated-area');
+
+  if (dedId) dedId.textContent = `#${parcel.id}`;
+  if (dedSurvey) dedSurvey.textContent = `Survey ${parcel.surveyNo} • Mouza ${parcel.mouza}`;
+  if (dedOwner) dedOwner.textContent = parcel.owner;
+  if (dedValuation) dedValuation.textContent = `₹ ${parcel.awardValuation.toLocaleString('en-IN')}`;
+  if (dedArea) dedArea.textContent = `${parcel.areaHa.toFixed(3)} Ha`;
 
   // Highlight row in table
   document.querySelectorAll('[data-parcel-row]').forEach(tr => {
@@ -602,7 +919,7 @@ function openParcelDossier(parcel) {
   document.getElementById('dossier-chainage').textContent = `${parcel.chainage}`;
   document.getElementById('dossier-coords').textContent = parcel.coordinates;
 
-  // Breakdown formula (2.5x Multiplier as shown in reference)
+  // Breakdown formula (2.5x Multiplier)
   const baseValue = parcel.circleRate * parcel.areaHa;
   const multiplierValue = baseValue * parcel.multiplier;
   document.getElementById('dossier-base-rate').textContent = `₹ ${parcel.circleRate.toLocaleString('en-IN')} / Ha`;
@@ -927,22 +1244,19 @@ function renderWaypointsList() {
 // --- MODALS & NOTIFICATIONS ---
 function initModals() {
   const btnNewProject = document.getElementById('btnNewProject');
+  const btnNewAcqProject = document.getElementById('btnNewAcqProject');
+  const btnNewProjectTab = document.getElementById('btnNewProjectTab');
   const modalNewProject = document.getElementById('modalNewProject');
   const btnCloseNewProject = document.getElementById('btnCloseNewProject');
-  const formNewProject = document.getElementById('formNewProject');
 
-  if (btnNewProject && modalNewProject) {
-    btnNewProject.addEventListener('click', () => modalNewProject.classList.remove('hidden'));
-    if (btnCloseNewProject) {
-      btnCloseNewProject.addEventListener('click', () => modalNewProject.classList.add('hidden'));
+  [btnNewProject, btnNewAcqProject, btnNewProjectTab].forEach(btn => {
+    if (btn && modalNewProject) {
+      btn.addEventListener('click', () => modalNewProject.classList.remove('hidden'));
     }
-    if (formNewProject) {
-      formNewProject.addEventListener('submit', (e) => {
-        e.preventDefault();
-        modalNewProject.classList.add('hidden');
-        showToast('✓ New Highway Acquisition Package created and registered.');
-      });
-    }
+  });
+
+  if (btnCloseNewProject && modalNewProject) {
+    btnCloseNewProject.addEventListener('click', () => modalNewProject.classList.add('hidden'));
   }
 
   const btnBulkUpload = document.getElementById('btnBulkUpload');
@@ -953,17 +1267,6 @@ function initModals() {
     btnBulkUpload.addEventListener('click', () => modalBulkUpload.classList.remove('hidden'));
     if (btnCloseBulkUpload) {
       btnCloseBulkUpload.addEventListener('click', () => modalBulkUpload.classList.add('hidden'));
-    }
-  }
-
-  const btnGazette = document.getElementById('btnGazetteReport');
-  const modalGazette = document.getElementById('modalGazette');
-  const btnCloseGazette = document.getElementById('btnCloseGazette');
-
-  if (btnGazette && modalGazette) {
-    btnGazette.addEventListener('click', () => modalGazette.classList.remove('hidden'));
-    if (btnCloseGazette) {
-      btnCloseGazette.addEventListener('click', () => modalGazette.classList.add('hidden'));
     }
   }
 
